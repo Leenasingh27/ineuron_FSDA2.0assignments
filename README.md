@@ -1,2 +1,160 @@
 # ineuron_FSDA2.0assignments
-i neuron data analyts assignment
+i neuron data analyts assignment 2
+
+USE WAREHOUSE DEMO_LEENA;
+USE DATABASE LS_DATABASE;
+
+CREATE OR REPLACE TABLE LS_COMPLAINS //1
+(
+  ID INTEGER NOT NULL PRIMARY KEY,
+  ComplainDate VARCHAR,
+  CompletionDate VARCHAR,
+  CustomerID INTEGER,
+  BrokerID INTEGER,
+  ProductID	INTEGER,
+  ComplainPriorityID INTEGER,
+  ComplainTypeID INTEGER,
+  ComplainSourceID	 INTEGER,
+  ComplainCategoryID INTEGER,
+  ComplainStatusID	INTEGER,
+  AdministratorID	INTEGER,
+  ClientSatisfaction STRING,
+  ExpectedReimbursement INTEGER
+  );
+  
+  SELECT DISTINCT * FROM LS_COMPLAINS;
+  
+  CREATE OR REPLACE TABLE LS_BROKERS //2
+  (
+    BrokerID INTEGER,
+    BrokerCode VARCHAR(15),
+    BrokerFullName VARCHAR(40),
+    DistributionNetwork	VARCHAR(30),
+    DistributionChannel	VARCHAR2(30),
+    CommissionScheme STRING
+  );
+  SELECT DISTINCT * FROM LS_BROKERS;
+  
+  CREATE OR REPLACE TABLE LS_PRODUCTS //3
+  (
+    ProductID INTEGER ,
+    ProductCategory	STRING,
+    ProductSubCategory STRING,
+    Product VARCHAR(20)
+  );
+  SELECT DISTINCT * FROM LS_PRODUCTS;
+  
+  CREATE OR REPLACE TABLE LS_REGIONS //4
+  (
+    id	INT ,
+    name VARCHAR(40),
+    county varchar(100),
+    state_code CHAR(10),
+    state	VARCHAR(30),
+    type VARCHAR(50),
+    latitude NUMBER(11,4),
+    longitude	NUMBER(11,4),
+    area_code INT,
+    population	INT,
+    households	INTEGER,
+    median_income	INTEGER,
+    land_area INTEGER,
+    water_area	INTEGER,
+    time_zone VARCHAR(40)
+  );
+  SELECT DISTINCT * FROM LS_REGIONS;
+  
+  
+  CREATE OR REPLACE TABLE LS_CUSTOMERS //5
+  (
+    CustomerID	INTEGER,
+    LastName VARCHAR(60),
+    FirstName VARCHAR(60),
+    BirthDate varchar(20),
+    Gender	VARCHAR(10),
+    ParticipantType VARCHAR(20),
+    RegionID INTEGER,
+    MaritalStatus VARCHAR(20)
+  );
+  SELECT DISTINCT * FROM LS_CUSTOMERS;
+  
+  CREATE OR REPLACE TABLE LS_STATE_REGIONS //6
+  (
+    StateCode VARCHAR(10),
+    State VARCHAR(20),
+    Region VARCHAR(20)
+  );
+  SELECT DISTINCT * FROM LS_STATE_REGIONS;
+  
+  CREATE OR REPLACE TABLE LS_PRIORITIES  //7
+  (
+  ID	INTEGER,
+  Description VARCHAR(20)
+  );
+  SELECT DISTINCT * FROM LS_PRIORITIES;
+  
+  CREATE OR REPLACE TABLE LS_STATUSES  //8
+  (
+  ID INTEGER,
+  Description VARCHAR(20)
+  );
+  SELECT DISTINCT * FROM LS_STATUSES;
+  
+  CREATE OR REPLACE TABLE LS_CATEGORIES //9
+  (
+  ID INTEGER,
+  Description string,
+  active varchar
+  );
+  SELECT DISTINCT * FROM LS_CATEGORIES;
+  
+ CREATE OR REPLACE TABLE LS_SOURCES //10
+  (
+  ID	INTEGER,
+  Description VARCHAR(20)
+  );
+  SELECT DISTINCT * FROM LS_SOURCES;
+  
+  CREATE OR REPLACE TABLE LS_TYPES   //11
+  (
+  ID  INTEGER,
+  Description VARCHAR(20)
+  );
+  SELECT DISTINCT * FROM LS_TYPES;
+  
+  
+ CREATE OR REPLACE TABLE LS_STATUS_HISTORY//12
+(
+   ID INTEGER ,
+   ComplaintID INTEGER,
+   ComplaintStatusID INT ,
+   StatusDate VARCHAR(20)
+);
+ 
+ //
+ CREATE OR REPLACE TABLE LS_COMPLAIN_MASTER AS
+  SELECT COM.ID,COM.ComplainDate,COM.CompletionDate,
+  CUS.LastName,CUS.FirstName,CUS.Gender,
+  BR.BrokerFullName,BR.CommissionScheme,
+  CAT.Description AS CATEGORIES,
+  SUR.Description AS SOURCES,
+  PR.Description AS PRIORITIES,
+  ST.Description AS STATUSES,
+  TY.Description AS TYPES,
+  SR.Region AS REGION,
+  REG.state AS STATE
+  FROM LS_COMPLAINS AS COM
+  LEFT OUTER JOIN LS_CUSTOMERS CUS ON COM.CustomerID=CUS.CustomerID
+  LEFT OUTER JOIN LS_STATUS_HISTORY SH ON COM.CustomerID=SH.ID
+  LEFT OUTER JOIN LS_REGIONS REG ON CUS.RegionID=REG.ID
+  LEFT OUTER JOIN LS_BROKERS BR ON COM.BrokerID =BR.BrokerID 
+  LEFT OUTER JOIN LS_CATEGORIES CAT ON COM.ComplainCategoryID=CAT.ID
+  LEFT OUTER JOIN LS_SOURCES SUR ON COM.ComplainSourceID=SUR.ID
+  LEFT OUTER JOIN LS_PRIORITIES PR ON COM.ComplainPriorityID=PR.ID
+  LEFT OUTER JOIN LS_STATUSES ST ON COM.ComplainStatusID=ST.ID
+  LEFT OUTER JOIN LS_TYPES TY ON COM.ComplainTypeID=TY.ID
+ LEFT OUTER JOIN LS_STATE_REGIONS SR ON REG.state_code=SR.statecode;
+ 
+  SELECT * FROM LS_COMPLAIN_MASTER;
+  DESCRIBE  TABLE LS_COMPLAIN_MASTER;
+  SELECT * FROM LS_COMPLAIN_MASTER WHERE CompletionDate='NULL';
